@@ -1,0 +1,4 @@
+Collisions :
+
+- Personnages principaux : 1
+- Environnement : 1, 2

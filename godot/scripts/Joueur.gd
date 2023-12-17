@@ -2,10 +2,10 @@ extends CharacterBody3D
 
 @onready var camera_pivot = $CameraWrapper
 @onready var visuel = $Visuel
-@onready var animations = $Visuel/modele_femme/AnimationPlayer
+@onready var animations = $Visuel/bot_homme/AnimationPlayer
 
 # Constantes
-const VITESSE_MARCHE = 3.0
+const VITESSE_MARCHE = 2.0
 const VITESSE_COURSE = 5.0
 var VITESSE = VITESSE_MARCHE
 const VELOCITE_SAUT = 4.5
@@ -35,6 +35,7 @@ func _physics_process(delta):
     # Gestion du saut
     if Input.is_action_just_pressed("sauter") and is_on_floor():
         velocity.y = VELOCITE_SAUT
+        animations.stop()
         animations.play("sauter")
 
     # Définition de la direction du joueur (perso + caméra)

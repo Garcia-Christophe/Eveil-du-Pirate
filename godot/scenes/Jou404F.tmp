@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbxsulvxtyet2"]
+
+[ext_resource type="Script" path="res://scripts/Joueur.gd" id="1_m3seb"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3qwqb"]
+radius = 0.25
+height = 1.8
+
+[node name="Joueur" type="CharacterBody3D"]
+script = ExtResource("1_m3seb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_3qwqb")
+
+[node name="CameraWrapper" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.50178, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraWrapper"]
+spring_length = 1.585
+margin = 0.5
+
+[node name="Camera3D" type="Camera3D" parent="CameraWrapper/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 0.948346, 0.317239, 0, -0.317239, 0.948346, 0, 0.486172, 1.58531)
+current = true
+
+[node name="Visuel" type="Node3D" parent="."]
