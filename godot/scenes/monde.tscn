@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://css7y42ong1um"]
+[gd_scene load_steps=14 format=3 uid="uid://css7y42ong1um"]
 
 [ext_resource type="PackedScene" uid="uid://bbxsulvxtyet2" path="res://scenes/Joueur.tscn" id="1_g50fq"]
+[ext_resource type="PackedScene" uid="uid://cg5y5ifokxku3" path="res://scenes/decor/Tresor.tscn" id="2_fevn2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8mfgk"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -79,6 +80,7 @@ collision_layer = 3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Map"]
 transform = Transform3D(-4.37114e-08, 0, 5, 0, 3, 0, -1, 0, -2.18557e-07, 0.545693, 1.5, 3.69507)
+layers = 3
 mesh = SubResource("BoxMesh_ucqi6")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Map/MeshInstance3D"]
@@ -88,3 +90,12 @@ collision_layer = 3
 shape = SubResource("ConcavePolygonShape3D_6vrw3")
 
 [node name="Joueur" parent="." instance=ExtResource("1_g50fq")]
+
+[node name="Tresor" parent="." instance=ExtResource("2_fevn2")]
+transform = Transform3D(-0.352822, 0, 0.935691, 0, 1, 0, -0.935691, 0, -0.352822, -2.83859, 0, -8.48971)
+
+[node name="Tresor2" parent="." instance=ExtResource("2_fevn2")]
+transform = Transform3D(0.556383, 0, 0.830926, 0, 1, 0, -0.830926, 0, 0.556383, -0.916315, 0, -8.00949)
+
+[node name="Tresor3" parent="." instance=ExtResource("2_fevn2")]
+transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697, -4.09652, 0, -7.35826)

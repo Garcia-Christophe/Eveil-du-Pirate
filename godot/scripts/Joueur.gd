@@ -13,59 +13,59 @@ const SENSIBILITE_SOURIS = 0.005
 var GRAVITE = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _ready():
-    Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _input(event):
-    # Gestion de la rotation de la vue via la souris
-    if event is InputEventMouseMotion:
-        rotate_y(-event.relative.x * SENSIBILITE_SOURIS)
-        camera_pivot.rotate_x(-event.relative.y * SENSIBILITE_SOURIS)
-        camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -PI/3, PI/3)
+	# Gestion de la rotation de la vue via la souris
+	if event is InputEventMouseMotion:
+		rotate_y(-event.relative.x * SENSIBILITE_SOURIS)
+		camera_pivot.rotate_x(-event.relative.y * SENSIBILITE_SOURIS)
+		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -PI/3, PI/3)
 
 func _physics_process(delta):
-    if not is_on_floor():
-        velocity.y -= GRAVITE * delta
-    
-    # Définition de la vitesse du perso
-    if Input.is_action_pressed("courir"):
-        VITESSE = VITESSE_COURSE
-    else:
-        VITESSE = VITESSE_MARCHE
+	if not is_on_floor():
+		velocity.y -= GRAVITE * delta
+	
+	# Définition de la vitesse du perso
+	if Input.is_action_pressed("courir"):
+		VITESSE = VITESSE_COURSE
+	else:
+		VITESSE = VITESSE_MARCHE
 
-    # Gestion du saut
-    if Input.is_action_just_pressed("sauter") and is_on_floor():
-        velocity.y = VELOCITE_SAUT
-        animations.stop()
-        animations.play("sauter")
+	# Gestion du saut
+	if Input.is_action_just_pressed("sauter") and is_on_floor():
+		velocity.y = VELOCITE_SAUT
+		animations.stop()
+		animations.play("sauter")
 
-    # Définition de la direction du joueur (perso + caméra)
-    var direction_input = Input.get_vector("gauche", "droite", "avancer", "reculer")
-    var direction_camera = -camera_pivot.global_transform.basis.z.normalized()
-    var direction_personnage = (transform.basis * Vector3(direction_input.x, 0, direction_input.y)).normalized()
-    
-    if direction_personnage.length_squared() > 0:
-        # Perso mobile
-        if is_on_floor() and animations.current_animation != "sauter":
-            if Input.is_action_pressed("courir"):
-                animations.play("courir")
-            else:
-                animations.play("marcher")
-        
-        # Déplacement du perso
-        velocity.x = direction_personnage.x * VITESSE
-        velocity.z = direction_personnage.z * VITESSE
+	# Définition de la direction du joueur (perso + caméra)
+	var direction_input = Input.get_vector("gauche", "droite", "avancer", "reculer")
+	var direction_camera = -camera_pivot.global_transform.basis.z.normalized()
+	var direction_personnage = (transform.basis * Vector3(direction_input.x, 0, direction_input.y)).normalized()
+	
+	if direction_personnage.length_squared() > 0:
+		# Perso mobile
+		if is_on_floor() and animations.current_animation != "sauter":
+			if Input.is_action_pressed("courir"):
+				animations.play("courir")
+			else:
+				animations.play("marcher")
+		
+		# Déplacement du perso
+		velocity.x = direction_personnage.x * VITESSE
+		velocity.z = direction_personnage.z * VITESSE
 
-        # Rotation du perso suivant sa direction
-        var rotation_cible = atan2(direction_personnage.x, direction_personnage.z) - atan2(direction_camera.x, direction_camera.z)
-        visuel.rotation.y = lerp_angle(visuel.rotation.y, rotation_cible, 0.15)
-    else:
-        # Perso immobile
-        if animations.current_animation != "attendre" and animations.current_animation != "sauter":
-            animations.play("attendre")
-        
-        # Déplacement du perso
-        velocity.x = move_toward(velocity.x, 0, VITESSE)
-        velocity.z = move_toward(velocity.z, 0, VITESSE)
+		# Rotation du perso suivant sa direction
+		var rotation_cible = atan2(direction_personnage.x, direction_personnage.z) - atan2(direction_camera.x, direction_camera.z)
+		visuel.rotation.y = lerp_angle(visuel.rotation.y, rotation_cible, 0.15)
+	else:
+		# Perso immobile
+		if animations.current_animation != "attendre" and animations.current_animation != "sauter":
+			animations.play("attendre")
+		
+		# Déplacement du perso
+		velocity.x = move_toward(velocity.x, 0, VITESSE)
+		velocity.z = move_toward(velocity.z, 0, VITESSE)
 
-    # Application des changements (vélocités, rotations...)
-    move_and_slide()
+	# Application des changements (vélocités, rotations...)
+	move_and_slide()

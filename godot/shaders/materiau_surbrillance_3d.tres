@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bbh43ioea7cbb"]
+
+[ext_resource type="Material" path="res://shaders/materiauSurbrillance.tres" id="1_bcvw6"]
+
+[resource]
+next_pass = ExtResource("1_bcvw6")
+cull_mode = 1

@@ -1,0 +1,281 @@
+[gd_scene load_steps=18 format=3 uid="uid://cg5y5ifokxku3"]
+
+[ext_resource type="Script" path="res://scripts/decor/Tresor.gd" id="1_18tgv"]
+[ext_resource type="PackedScene" uid="uid://bq3dgaltnn4qc" path="res://scenes/interaction/Interactif.tscn" id="1_s7ocl"]
+[ext_resource type="Material" path="res://shaders/new_standard_material_3d.tres" id="2_8me61"]
+[ext_resource type="AudioStream" uid="uid://c7g3vvokre6t8" path="res://sons/decor/ouverture_tresor.mp3" id="3_cr628"]
+
+[sub_resource type="Shader" id="Shader_f7t8m"]
+code = "//Copyright 2021 redvillusion
+//
+//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files 
+//(the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
+//merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished
+//to do so, subject to the following conditions:
+//
+//The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+//THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+//OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
+//LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+//IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+shader_type spatial;
+
+render_mode unshaded, cull_front;
+
+
+uniform float border_width : hint_range(0,1,0.001);
+uniform vec4 color : source_color = vec4(1.0);
+
+uniform bool pattern;
+uniform float line_number : hint_range(0,100,1);
+uniform float line_sharpness : hint_range(0,10,0.001);
+
+uniform bool pulse;
+uniform float pulse_speed : hint_range(0,100,1);
+
+uniform bool line_movement;
+uniform float line_movement_speed : hint_range(-100,100,1);
+
+uniform bool wave;
+
+void vertex() {
+	VERTEX += VERTEX * border_width;
+}
+
+void fragment() {
+	ALBEDO = color.xyz;
+	if (pattern) 
+	{
+		vec2 uv = VERTEX.xy * line_number;
+		ALBEDO = sin(uv.xxx + uv.yyy) * line_sharpness * color.xyz;
+	
+		if (pulse)
+		{
+			ALBEDO = sin(uv.xxx + uv.yyy) * line_sharpness * color.xyz * sin(TIME * pulse_speed);
+		}
+		
+		if (line_movement)
+		{
+			ALBEDO = sin(uv.xxx + uv.yyy + TIME * line_movement_speed) * line_sharpness * color.xyz;
+		}
+		
+		if (pulse && line_movement)
+		{
+			ALBEDO = sin(uv.xxx + uv.yyy + TIME * line_movement_speed) * line_sharpness * color.xyz * sin(TIME * pulse_speed);
+		}
+	}
+	
+	if (wave)
+	{
+		vec2 uv = VERTEX.xy * line_number;
+		ALBEDO = sin(uv.xxx + TIME * line_movement_speed) * line_sharpness * color.xyz;
+	}
+
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nl8gs"]
+render_priority = 0
+shader = SubResource("Shader_f7t8m")
+shader_parameter/border_width = 0.05
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/pattern = null
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = null
+shader_parameter/pulse = null
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = null
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = null
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hsvm"]
+next_pass = SubResource("ShaderMaterial_nl8gs")
+albedo_color = Color(0.321569, 0.180392, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kkqo0"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f5gkn"]
+
+[sub_resource type="Animation" id="Animation_8fogq"]
+resource_name = "ouverture"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.230515, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, -0.453786), Vector3(0, 0, -0.392699)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Lueur:light_energy")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [2.0, 2.0, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_j10oo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Lueur:light_energy")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_iom5o"]
+_data = {
+"RESET": SubResource("Animation_j10oo"),
+"ouverture": SubResource("Animation_8fogq")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_atyx0"]
+albedo_color = Color(0.356863, 0.239216, 0.121569, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dyd1s"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_kyfug"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_7vggs"]
+data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_akik3"]
+
+[node name="Tresor" type="Node3D"]
+script = ExtResource("1_18tgv")
+
+[node name="Couvercle" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.4, 0)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="Couvercle"]
+layers = 3
+material_override = SubResource("StandardMaterial3D_5hsvm")
+use_collision = true
+collision_mask = 0
+
+[node name="CylindreVisible" type="CSGCylinder3D" parent="Couvercle/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.25, 0.00121239, 0)
+layers = 3
+radius = 0.25
+height = 0.8
+sides = 32
+
+[node name="CylindreSoustraction" type="CSGCylinder3D" parent="Couvercle/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.25, 0.00121239, 0)
+layers = 3
+operation = 2
+radius = 0.215069
+height = 0.736137
+sides = 32
+
+[node name="BoxSoustraction" type="CSGBox3D" parent="Couvercle/CSGCombiner3D"]
+transform = Transform3D(0.6, 0, 0, 0, 0.25, 0, 0, 0, 0.9, -0.25, -0.125, 0)
+operation = 2
+
+[node name="Serrure" type="MeshInstance3D" parent="Couvercle"]
+transform = Transform3D(0.05, 0, 0, 0, 0.2, 0, 0, 0, 0.1, -0.5, 0, 0)
+material_override = SubResource("StandardMaterial3D_kkqo0")
+mesh = SubResource("BoxMesh_f5gkn")
+
+[node name="Animation" type="AnimationPlayer" parent="Couvercle"]
+libraries = {
+"": SubResource("AnimationLibrary_iom5o")
+}
+
+[node name="Coffre" type="Node3D" parent="."]
+
+[node name="Fond" type="MeshInstance3D" parent="Coffre"]
+transform = Transform3D(0.5, 0, 0, 0, 0.05, 0, 0, 0, 0.8, 0, 0.025, 0)
+layers = 3
+material_override = SubResource("StandardMaterial3D_atyx0")
+mesh = SubResource("BoxMesh_dyd1s")
+
+[node name="BordGauche" type="MeshInstance3D" parent="Coffre"]
+transform = Transform3D(0.5, 0, 0, 0, 0.4, 0, 0, 0, 0.05, 0, 0.2, 0.375)
+layers = 3
+material_override = SubResource("StandardMaterial3D_atyx0")
+mesh = SubResource("BoxMesh_dyd1s")
+
+[node name="BordDroit" type="MeshInstance3D" parent="Coffre"]
+transform = Transform3D(0.5, 0, 0, 0, 0.4, 0, 0, 0, 0.05, 0, 0.2, -0.375)
+layers = 3
+material_override = SubResource("StandardMaterial3D_atyx0")
+mesh = SubResource("BoxMesh_dyd1s")
+
+[node name="BordAvant" type="MeshInstance3D" parent="Coffre"]
+transform = Transform3D(0.05, 0, 0, 0, 0.4, 0, 0, 0, 0.8, -0.225, 0.2, 0)
+layers = 3
+material_override = SubResource("StandardMaterial3D_atyx0")
+mesh = SubResource("BoxMesh_dyd1s")
+
+[node name="BordArriere" type="MeshInstance3D" parent="Coffre"]
+transform = Transform3D(0.05, 0, 0, 0, 0.4, 0, 0, 0, 0.8, 0.225, 0.2, 0)
+layers = 3
+material_override = SubResource("StandardMaterial3D_atyx0")
+mesh = SubResource("BoxMesh_dyd1s")
+
+[node name="Lueur" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.207628, 0)
+layers = 3
+light_color = Color(0.909804, 0.796078, 0, 1)
+light_energy = 2.0
+shadow_enabled = true
+
+[node name="CoffreMeshContours" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.39, 0, 0, 0, 0.8, 0, 0.21, 0)
+layers = 3
+material_override = ExtResource("2_8me61")
+mesh = SubResource("BoxMesh_kyfug")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="CoffreMeshContours"]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CoffreMeshContours/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_7vggs")
+
+[node name="Interactif" parent="." instance=ExtResource("1_s7ocl")]
+
+[node name="CollisionShape3D" parent="Interactif" index="0"]
+transform = Transform3D(0.5, 0, 0, 0, 0.7, 0, 0, 0, 0.8, 0, 0.35, 0)
+shape = SubResource("BoxShape3D_akik3")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.387285, 0)
+stream = ExtResource("3_cr628")
+unit_size = 3.0
+
+[connection signal="cible" from="Interactif" to="." method="_on_interactif_cible"]
+[connection signal="en_interaction" from="Interactif" to="." method="_on_interactif_en_interaction"]
+[connection signal="non_cible" from="Interactif" to="." method="_on_interactif_non_cible"]
+
+[editable path="Interactif"]
