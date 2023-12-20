@@ -60,3 +60,8 @@ courir={
 [layer_names]
 
 3d_physics/layer_3="interactif"
+
+[rendering]
+
+anti_aliasing/quality/msaa_3d=3
+anti_aliasing/quality/screen_space_aa=1
