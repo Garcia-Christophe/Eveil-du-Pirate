@@ -19,7 +19,6 @@ func _physics_process(_delta):
 
 func _input(event):
 	if event.is_action_pressed("intéragir") and is_instance_valid(elem_interactif_enregistre):
-		print(elem_interactif_enregistre)
 		interagir(elem_interactif_enregistre)
 		elem_interactif_enregistre = null
 

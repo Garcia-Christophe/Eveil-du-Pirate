@@ -1,11 +1,105 @@
-[gd_scene load_steps=18 format=3 uid="uid://cg5y5ifokxku3"]
+[gd_scene load_steps=21 format=3 uid="uid://cg5y5ifokxku3"]
 
 [ext_resource type="Script" path="res://scripts/decor/Tresor.gd" id="1_18tgv"]
 [ext_resource type="PackedScene" uid="uid://bq3dgaltnn4qc" path="res://scenes/interaction/Interactif.tscn" id="1_s7ocl"]
-[ext_resource type="Material" path="res://shaders/new_standard_material_3d.tres" id="2_8me61"]
+[ext_resource type="Shader" path="res://shaders/Interactif.gdshader" id="2_eqfmu"]
 [ext_resource type="AudioStream" uid="uid://c7g3vvokre6t8" path="res://sons/decor/ouverture_tresor.mp3" id="3_cr628"]
 
-[sub_resource type="Shader" id="Shader_f7t8m"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fjsk1"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_eqfmu")
+shader_parameter/border_width = 0.05
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/pattern = null
+shader_parameter/line_number = null
+shader_parameter/line_sharpness = null
+shader_parameter/pulse = null
+shader_parameter/pulse_speed = null
+shader_parameter/line_movement = null
+shader_parameter/line_movement_speed = null
+shader_parameter/wave = null
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_76a4x"]
+resource_local_to_scene = true
+next_pass = SubResource("ShaderMaterial_fjsk1")
+albedo_color = Color(0.321569, 0.180392, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kkqo0"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f5gkn"]
+
+[sub_resource type="Animation" id="Animation_j10oo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Lueur:light_energy")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.0]
+}
+
+[sub_resource type="Animation" id="Animation_8fogq"]
+resource_name = "ouverture"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.230515, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, -0.453786), Vector3(0, 0, -0.392699)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Lueur:light_energy")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [2.0, 2.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_iom5o"]
+_data = {
+"RESET": SubResource("Animation_j10oo"),
+"ouverture": SubResource("Animation_8fogq")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_atyx0"]
+albedo_color = Color(0.356863, 0.239216, 0.121569, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dyd1s"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d1eh6"]
+resource_local_to_scene = true
+
+[sub_resource type="Shader" id="Shader_srddr"]
 code = "//Copyright 2021 redvillusion
 //
 //Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files 
@@ -75,94 +169,26 @@ void fragment() {
 
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_nl8gs"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cjn86"]
+resource_local_to_scene = true
 render_priority = 0
-shader = SubResource("Shader_f7t8m")
+next_pass = SubResource("ShaderMaterial_d1eh6")
+shader = SubResource("Shader_srddr")
 shader_parameter/border_width = 0.05
 shader_parameter/color = Color(1, 1, 1, 1)
-shader_parameter/pattern = null
+shader_parameter/pattern = false
 shader_parameter/line_number = null
 shader_parameter/line_sharpness = null
-shader_parameter/pulse = null
+shader_parameter/pulse = false
 shader_parameter/pulse_speed = null
 shader_parameter/line_movement = null
 shader_parameter/line_movement_speed = null
-shader_parameter/wave = null
+shader_parameter/wave = false
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hsvm"]
-next_pass = SubResource("ShaderMaterial_nl8gs")
-albedo_color = Color(0.321569, 0.180392, 0, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kkqo0"]
-albedo_color = Color(0, 0, 0, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_f5gkn"]
-
-[sub_resource type="Animation" id="Animation_8fogq"]
-resource_name = "ouverture"
-length = 2.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.230515, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, -0.453786), Vector3(0, 0, -0.392699)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("../Lueur:light_energy")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 1, 2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [2.0, 2.0, 0.0]
-}
-
-[sub_resource type="Animation" id="Animation_j10oo"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("../Lueur:light_energy")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [2.0]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_iom5o"]
-_data = {
-"RESET": SubResource("Animation_j10oo"),
-"ouverture": SubResource("Animation_8fogq")
-}
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_atyx0"]
-albedo_color = Color(0.356863, 0.239216, 0.121569, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_dyd1s"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b1vdk"]
+resource_local_to_scene = true
+next_pass = SubResource("ShaderMaterial_cjn86")
+cull_mode = 1
 
 [sub_resource type="BoxMesh" id="BoxMesh_kyfug"]
 
@@ -179,7 +205,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.4, 0)
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="Couvercle"]
 layers = 3
-material_override = SubResource("StandardMaterial3D_5hsvm")
+material_override = SubResource("StandardMaterial3D_76a4x")
 use_collision = true
 collision_mask = 0
 
@@ -254,7 +280,7 @@ shadow_enabled = true
 [node name="CoffreMeshContours" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.5, 0, 0, 0, 0.39, 0, 0, 0, 0.8, 0, 0.21, 0)
 layers = 3
-material_override = ExtResource("2_8me61")
+material_override = SubResource("StandardMaterial3D_b1vdk")
 mesh = SubResource("BoxMesh_kyfug")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="CoffreMeshContours"]
