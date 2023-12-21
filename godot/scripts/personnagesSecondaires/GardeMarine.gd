@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+@export var position_initiale : Vector3
+
 @onready var joueur = get_parent().get_node("Joueur")
 @onready var navigation : NavigationAgent3D = $NavigationAgent3D
 @onready var animations = $Visuel/bot_femme/AnimationPlayer
@@ -22,6 +24,7 @@ var z_position = randf_range(-360,360)
 # Etat du garde
 const deplacement_ou_non = [true, false]
 var deplacement = deplacement_ou_non[randi() % deplacement_ou_non.size()]
+var retour_position_initiale = false
 var apercoit = false
 var curieux = false
 var poursuite = false
@@ -40,11 +43,13 @@ func _process(delta):
 		apercoit = false
 		joueur_enfui = false
 	elif poursuite == true:
-		# Poursuit le joueur
-		se_diriger_vers_le_joueur(true, delta)
+		if joueur != null:
+			# Poursuit le joueur
+			se_diriger_vers(joueur.global_transform.origin, true, delta)
 	elif curieux == true:
-		# Marche vers le joueur
-		se_diriger_vers_le_joueur(false, delta)
+		if joueur != null:
+			# Marche vers le joueur
+			se_diriger_vers(joueur.global_transform.origin, false, delta)
 	elif joueur_enfui == true || (apercoit == true && !deplacement):
 		# Fixe le joueur lorsqu'il est sorti de sa zone
 		animations.play("attendre")
@@ -56,6 +61,14 @@ func _process(delta):
 			var wtransform = self.global_transform.looking_at(Vector3(position_joueur.x, position_garde.y, position_joueur.z), Vector3.UP)
 			var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
 			self.global_transform = Transform3D(Basis(wrotation), position_garde)
+	elif retour_position_initiale == true:
+		# Se dirige vers sa position initiale
+		deplacement = false
+		se_diriger_vers(position_initiale, false, delta)
+		
+		if position.distance_to(position_initiale) < 1:
+			# Le garde a retrouvé sa position initiale, il peut retrouver son comportement normal
+			retour_position_initiale = false
 	elif deplacement == true:
 		# Se déplace tranquillement
 		animations.play("marcher")
@@ -73,38 +86,35 @@ func _process(delta):
 	if not is_on_floor():
 		move_and_collide(-global_transform.basis.y.normalized() * GRAVITE * delta)
 
-# S'oriente et se déplace vers le joueur
-func se_diriger_vers_le_joueur(courir, delta):
-	if joueur != null:
-		var vitesse = VITESSE_COURSE if courir else VITESSE_MARCHE
-		
-		# Orientation vers la position du joueur
-		var position_garde = self.global_transform.origin
-		var position_joueur = joueur.global_transform.origin
+# S'oriente et se déplace vers une position cible
+func se_diriger_vers(position_cible, courir, delta):
+	var vitesse = VITESSE_COURSE if courir else VITESSE_MARCHE
+	var position_garde = self.global_transform.origin
 
-		# Vérifie que les positions sont différentes avant d'appeler looking_at
-		if position_garde != position_joueur:
-			var wtransform = self.global_transform.looking_at(Vector3(position_joueur.x, position_garde.y, position_joueur.z), Vector3.UP)
-			var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
-			self.global_transform = Transform3D(Basis(wrotation), position_garde)
+	# Vérifie que les positions sont différentes avant d'appeler looking_at
+	if position_garde != position_cible:
+		# Orientation vers la position cible
+		var wtransform = self.global_transform.looking_at(Vector3(position_cible.x, position_garde.y, position_cible.z), Vector3.UP)
+		var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
+		self.global_transform = Transform3D(Basis(wrotation), position_garde)
 
-		# Définie la prochaine position du garde (en direction du joueur)
-		navigation.set_target_position(joueur.transform.origin)
-		# Déplacement vers le joueur
-		var position_suivante = navigation.get_next_path_position()
-		var distance = position.distance_to(joueur.position)
-		var velocite = (position_suivante - transform.origin).normalized() * vitesse  * delta
-		if distance <= 1.5:
-			# Le garde a capturé le joueur
-			capture = true
-		else:
-			animations.play("courir" if courir else "marcher")
-			move_and_collide(velocite)
+	# Définie la prochaine position du garde (en direction de la cible)
+	navigation.set_target_position(position_cible)
+	# Déplacement vers la cible
+	var position_suivante = navigation.get_next_path_position()
+	var distance = position.distance_to(joueur.position)
+	var velocite = (position_suivante - transform.origin).normalized() * vitesse  * delta
+	if distance <= 1.5:
+		# Le garde a capturé le joueur
+		capture = true
+	else:
+		animations.play("courir" if courir else "marcher")
+		move_and_collide(velocite)
 
 # Timer pour décider si le garde se déplace ou s'il regarde ailleurs
 func _on_timer_timeout():
 	$Timer.set_wait_time(randf_range(4,8))
-	if rond_etat.texture == null:
+	if rond_etat.texture == null && !retour_position_initiale:
 		x_position = randf_range(-360,360) 
 		z_position = randf_range(-360,360)
 		# Décision du comportement au hasard
@@ -113,9 +123,12 @@ func _on_timer_timeout():
 
 # Timer pour le temps d'observation du joueur lorsqu'il s'est échappé
 func _on_timer_2_timeout():
+	print("_on_timer_2_timeout")
 	joueur_enfui = false
 	if !apercoit && !curieux && !poursuite:
 		rond_etat.texture = null
+		# TODO: Seulement si pas dans sa zone de déplacement
+		retour_position_initiale = true
 
 func _on_navigation_agent_3d_velocity_computed(safe_velocity):
 	move_and_collide(safe_velocity)
@@ -129,6 +142,7 @@ func _on_area_precaution_body_entered(body):
 # Le joueur sort de la zone de précaution du garde
 func _on_area_precaution_body_exited(body):
 	if body.name == ("Joueur"):
+		print(joueur.position)
 		apercoit = false
 		poursuite = false
 		joueur_enfui = true

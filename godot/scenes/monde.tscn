@@ -91,7 +91,11 @@ transform = Transform3D(0.556383, 0, 0.830926, 0, 1, 0, -0.830926, 0, 0.556383, 
 [node name="Tresor3" parent="NavigationRegion3D/Map" instance=ExtResource("2_43sdr")]
 transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697, -4.09652, 0, -7.35826)
 
+[node name="Tresor4" parent="NavigationRegion3D/Map" instance=ExtResource("2_43sdr")]
+transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697, -1.52569, 0, -21.2174)
+
 [node name="Joueur" parent="." instance=ExtResource("1_powc2")]
 
 [node name="GardeMarineFemme" parent="." instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21.0067)
+position_initiale = Vector3(0, 0, -21.0067)
