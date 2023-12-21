@@ -6,7 +6,8 @@ extends CharacterBody3D
 
 # Constantes
 const VITESSE_MARCHE = 2.0
-const VITESSE_COURSE = 5.0
+#const VITESSE_COURSE = 5.0
+const VITESSE_COURSE = 10.0
 var VITESSE = VITESSE_MARCHE
 const VELOCITE_SAUT = 4.5
 const SENSIBILITE_SOURIS = 0.005
