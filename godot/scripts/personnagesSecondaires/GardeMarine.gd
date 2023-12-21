@@ -26,19 +26,26 @@ var apercoit = false
 var curieux = false
 var poursuite = false
 var joueur_enfui = false
+var capture = false
 
 func _ready():
 	rond_etat.texture = null
 
 # Exécuter à chaque frame
 func _process(delta):
-	if poursuite == true:
+	if capture == true:
+		animations.play("coup_de_pied")
+		poursuite = false
+		curieux = false
+		apercoit = false
+		joueur_enfui = false
+	elif poursuite == true:
 		# Poursuit le joueur
 		se_diriger_vers_le_joueur(true, delta)
 	elif curieux == true:
 		# Marche vers le joueur
 		se_diriger_vers_le_joueur(false, delta)
-	elif joueur_enfui == true || apercoit == true:
+	elif joueur_enfui == true || (apercoit == true && !deplacement):
 		# Fixe le joueur lorsqu'il est sorti de sa zone
 		animations.play("attendre")
 		var position_garde = self.global_transform.origin
@@ -70,7 +77,6 @@ func _process(delta):
 func se_diriger_vers_le_joueur(courir, delta):
 	if joueur != null:
 		var vitesse = VITESSE_COURSE if courir else VITESSE_MARCHE
-		animations.play("courir" if courir else "marcher")
 		
 		# Orientation vers la position du joueur
 		var position_garde = self.global_transform.origin
@@ -86,8 +92,14 @@ func se_diriger_vers_le_joueur(courir, delta):
 		navigation.set_target_position(joueur.transform.origin)
 		# Déplacement vers le joueur
 		var position_suivante = navigation.get_next_path_position()
+		var distance = position.distance_to(joueur.position)
 		var velocite = (position_suivante - transform.origin).normalized() * vitesse  * delta
-		move_and_collide(velocite)
+		if distance <= 1.5:
+			# Le garde a capturé le joueur
+			capture = true
+		else:
+			animations.play("courir" if courir else "marcher")
+			move_and_collide(velocite)
 
 # Timer pour décider si le garde se déplace ou s'il regarde ailleurs
 func _on_timer_timeout():
@@ -108,11 +120,13 @@ func _on_timer_2_timeout():
 func _on_navigation_agent_3d_velocity_computed(safe_velocity):
 	move_and_collide(safe_velocity)
 
+# Le joueur entre dans la zone de précaution du garde
 func _on_area_precaution_body_entered(body):
 	if body.name == ("Joueur"):
 		apercoit = true
 		rond_etat.texture = rond_points_suspension
 
+# Le joueur sort de la zone de précaution du garde
 func _on_area_precaution_body_exited(body):
 	if body.name == ("Joueur"):
 		apercoit = false
@@ -121,21 +135,28 @@ func _on_area_precaution_body_exited(body):
 		rond_etat.texture = rond_points_suspension
 		$Timer2.start()
 
+# Le joueur entre dans la zone de curiosité du garde
 func _on_area_avertissement_body_entered(body):
 	if body.name == ("Joueur"):
 		curieux = true
 		rond_etat.texture = rond_interrogation
 
+# Le joueur sort de la zone de curiosité du garde
 func _on_area_avertissement_body_exited(body):
 	if body.name == ("Joueur"):
 		curieux = false
+		if !poursuite && apercoit:
+			rond_etat.texture = rond_points_suspension
 
-# Le joueur entre dans la zone de détection
+# Le joueur entre dans la zone de détection (danger) du garde
 func _on_area_danger_body_entered(body):
 	if body.name == ("Joueur"):
 		poursuite = true
 		rond_etat.texture = rond_exclamation
 
-# Le joueur sort de la zone de détection
-func _on_area_danger_body_exited(_body):
-	pass
+func _on_animation_player_animation_finished(anim_name):
+	if anim_name == "coup_de_pied":
+		capture = false;
+		rond_etat.texture = null
+		# temporaire : il faudra envoyer un signal au joueur pour dire qu'il est capturé
+		joueur.set_collision_layer_value(1, false)
