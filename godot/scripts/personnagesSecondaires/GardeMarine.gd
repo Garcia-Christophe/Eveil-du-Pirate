@@ -1,10 +1,13 @@
 extends CharacterBody3D
 
 @export var position_initiale : Vector3
+@export var zone_de_circulation : Area3D
 
 @onready var joueur = get_parent().get_node("Joueur")
 @onready var navigation : NavigationAgent3D = $NavigationAgent3D
 @onready var animations = $Visuel/bot_femme/AnimationPlayer
+@onready var raycast_position = $RayCast3D_Position
+@onready var raycast_vision = $Visuel/RayCast_Vision
 
 # Etats
 @onready var rond_etat = $RondEtat
@@ -57,7 +60,7 @@ func _process(delta):
 		var position_joueur = joueur.global_transform.origin
 
 		# Vérifie que les positions sont différentes avant d'appeler looking_at
-		if position_garde != position_joueur:
+		if Vector3(position_joueur.x, position_garde.y, position_joueur.z) != Vector3.UP:
 			var wtransform = self.global_transform.looking_at(Vector3(position_joueur.x, position_garde.y, position_joueur.z), Vector3.UP)
 			var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
 			self.global_transform = Transform3D(Basis(wrotation), position_garde)
@@ -70,10 +73,16 @@ func _process(delta):
 			# Le garde a retrouvé sa position initiale, il peut retrouver son comportement normal
 			retour_position_initiale = false
 	elif deplacement == true:
-		# Se déplace tranquillement
-		animations.play("marcher")
+		# Se déplace tranquillement dans sa zone de déplacement
 		var velocite = global_transform.basis.z.normalized() * VITESSE_MARCHE * delta
-		move_and_collide(-velocite)
+		var position_suivante = position - velocite
+		
+		# Vérifie s'il y a une collision avec l'Area3D
+		if est_dans_zone_de_circulation(position_suivante):
+			animations.play("marcher")
+			move_and_collide(-velocite)
+		else:
+			deplacement = false
 	else:
 		# Regarde dans une autre direction
 		animations.play("attendre")
@@ -92,7 +101,7 @@ func se_diriger_vers(position_cible, courir, delta):
 	var position_garde = self.global_transform.origin
 
 	# Vérifie que les positions sont différentes avant d'appeler looking_at
-	if position_garde != position_cible:
+	if Vector3(position_cible.x, position_garde.y, position_cible.z) != Vector3.UP:
 		# Orientation vers la position cible
 		var wtransform = self.global_transform.looking_at(Vector3(position_cible.x, position_garde.y, position_cible.z), Vector3.UP)
 		var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
@@ -111,6 +120,15 @@ func se_diriger_vers(position_cible, courir, delta):
 		animations.play("courir" if courir else "marcher")
 		move_and_collide(velocite)
 
+# Renvoie un boolean suivant si la position est dans la zone de circulation
+func est_dans_zone_de_circulation(position_a_verifier):
+	raycast_position.global_position.x = position_a_verifier.x
+	raycast_position.global_position.z = position_a_verifier.z
+	raycast_position.force_raycast_update()
+	
+	# Vérifie s'il y a une collision avec l'Area3D
+	return raycast_position.is_colliding() and raycast_position.get_collider() == zone_de_circulation
+
 # Timer pour décider si le garde se déplace ou s'il regarde ailleurs
 func _on_timer_timeout():
 	$Timer.set_wait_time(randf_range(4,8))
@@ -123,12 +141,11 @@ func _on_timer_timeout():
 
 # Timer pour le temps d'observation du joueur lorsqu'il s'est échappé
 func _on_timer_2_timeout():
-	print("_on_timer_2_timeout")
 	joueur_enfui = false
 	if !apercoit && !curieux && !poursuite:
 		rond_etat.texture = null
-		# TODO: Seulement si pas dans sa zone de déplacement
-		retour_position_initiale = true
+		if !est_dans_zone_de_circulation(position):
+			retour_position_initiale = true
 
 func _on_navigation_agent_3d_velocity_computed(safe_velocity):
 	move_and_collide(safe_velocity)
@@ -142,7 +159,6 @@ func _on_area_precaution_body_entered(body):
 # Le joueur sort de la zone de précaution du garde
 func _on_area_precaution_body_exited(body):
 	if body.name == ("Joueur"):
-		print(joueur.position)
 		apercoit = false
 		poursuite = false
 		joueur_enfui = true
@@ -151,7 +167,7 @@ func _on_area_precaution_body_exited(body):
 
 # Le joueur entre dans la zone de curiosité du garde
 func _on_area_avertissement_body_entered(body):
-	if body.name == ("Joueur"):
+	if body.name == ("Joueur") && !poursuite:
 		curieux = true
 		rond_etat.texture = rond_interrogation
 
