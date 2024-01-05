@@ -7,7 +7,6 @@ extends CharacterBody3D
 @onready var navigation : NavigationAgent3D = $NavigationAgent3D
 @onready var animations = $Visuel/bot_femme/AnimationPlayer
 @onready var raycast_position = $RayCast3D_Position
-@onready var raycast_vision = $Visuel/RayCast_Vision
 
 # Etats
 @onready var rond_etat = $RondEtat
@@ -51,19 +50,32 @@ func _process(delta):
 			se_diriger_vers(joueur.global_transform.origin, true, delta)
 	elif curieux == true:
 		if joueur != null:
-			# Marche vers le joueur
-			se_diriger_vers(joueur.global_transform.origin, false, delta)
+			if peut_voir_le_joueur():
+				se_diriger_vers(joueur.global_transform.origin, false, delta)
+			else:
+				curieux = false
+				apercoit = false
+				rond_etat.texture = null
+				if !est_dans_zone_de_circulation(position):
+					retour_position_initiale = true
 	elif joueur_enfui == true || (apercoit == true && !deplacement):
-		# Fixe le joueur lorsqu'il est sorti de sa zone
-		animations.play("attendre")
-		var position_garde = self.global_transform.origin
-		var position_joueur = joueur.global_transform.origin
+		if peut_voir_le_joueur():
+			# Fixe le joueur lorsqu'il est sorti de sa zone
+			animations.play("attendre")
+			var position_garde = self.global_transform.origin
+			var position_joueur = joueur.global_transform.origin
 
-		# Vérifie que les positions sont différentes avant d'appeler looking_at
-		if Vector3(position_joueur.x, position_garde.y, position_joueur.z) != Vector3.UP:
-			var wtransform = self.global_transform.looking_at(Vector3(position_joueur.x, position_garde.y, position_joueur.z), Vector3.UP)
-			var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
-			self.global_transform = Transform3D(Basis(wrotation), position_garde)
+			# Vérifie que les positions sont différentes avant d'appeler looking_at
+			if Vector3(position_joueur.x, position_garde.y, position_joueur.z) != Vector3.UP:
+				var wtransform = self.global_transform.looking_at(Vector3(position_joueur.x, position_garde.y, position_joueur.z), Vector3.UP)
+				var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
+				self.global_transform = Transform3D(Basis(wrotation), position_garde)
+		else:
+			apercoit = false
+			joueur_enfui = false
+			rond_etat.texture = null
+			if !est_dans_zone_de_circulation(position):
+				retour_position_initiale = true
 	elif retour_position_initiale == true:
 		# Se dirige vers sa position initiale
 		deplacement = false
@@ -129,6 +141,16 @@ func est_dans_zone_de_circulation(position_a_verifier):
 	# Vérifie s'il y a une collision avec l'Area3D
 	return raycast_position.is_colliding() and raycast_position.get_collider() == zone_de_circulation
 
+# Renvoie un boolean suivant si le garde voit le joueur
+func peut_voir_le_joueur():
+	var direct_state = get_world_3d().direct_space_state
+	var collision = direct_state.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(position.x, 1.68, position.z), Vector3(joueur.position.x, 1.68, joueur.position.z)))
+	
+	if collision:
+		return collision.collider == joueur
+	else:
+		return false
+
 # Timer pour décider si le garde se déplace ou s'il regarde ailleurs
 func _on_timer_timeout():
 	$Timer.set_wait_time(randf_range(4,8))
@@ -155,10 +177,11 @@ func _on_area_precaution_body_entered(body):
 	if body.name == ("Joueur"):
 		apercoit = true
 		rond_etat.texture = rond_points_suspension
+		retour_position_initiale = false
 
 # Le joueur sort de la zone de précaution du garde
 func _on_area_precaution_body_exited(body):
-	if body.name == ("Joueur"):
+	if body.name == ("Joueur") && !retour_position_initiale:
 		apercoit = false
 		poursuite = false
 		joueur_enfui = true
@@ -170,10 +193,11 @@ func _on_area_avertissement_body_entered(body):
 	if body.name == ("Joueur") && !poursuite:
 		curieux = true
 		rond_etat.texture = rond_interrogation
+		retour_position_initiale = false
 
 # Le joueur sort de la zone de curiosité du garde
 func _on_area_avertissement_body_exited(body):
-	if body.name == ("Joueur"):
+	if body.name == ("Joueur") && !retour_position_initiale:
 		curieux = false
 		if !poursuite && apercoit:
 			rond_etat.texture = rond_points_suspension
@@ -183,6 +207,7 @@ func _on_area_danger_body_entered(body):
 	if body.name == ("Joueur"):
 		poursuite = true
 		rond_etat.texture = rond_exclamation
+		retour_position_initiale = false
 
 func _on_animation_player_animation_finished(anim_name):
 	if anim_name == "coup_de_pied":
