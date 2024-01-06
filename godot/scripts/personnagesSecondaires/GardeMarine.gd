@@ -101,7 +101,7 @@ func _process(delta):
 		var position_garde = self.global_transform.origin
 		
 		var wtransform = self.global_transform.looking_at(Vector3(x_position, position_garde.y, z_position), Vector3.UP)
-		var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.15)
+		var wrotation = Quaternion(global_transform.basis).slerp(Quaternion(wtransform.basis), 0.03)
 		self.global_transform = Transform3D(Basis(wrotation), position_garde)
 
 	if not is_on_floor():

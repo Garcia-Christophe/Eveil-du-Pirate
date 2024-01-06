@@ -117,13 +117,35 @@ transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697
 
 [node name="Joueur" parent="." instance=ExtResource("1_powc2")]
 
-[node name="GardeMarineFemme" parent="." node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+[node name="GardeMarineFemme1" parent="." node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21.0067)
 position_initiale = Vector3(0, 0, -21.0067)
-zone_de_circulation = NodePath("../ZoneCirculationGarde")
+zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme1")
 
-[node name="ZoneCirculationGarde" type="Area3D" parent="."]
+[node name="ZoneCirculationGardeMarineFemme1" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -20.947)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ZoneCirculationGarde"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ZoneCirculationGardeMarineFemme1"]
+shape = SubResource("CylinderShape3D_svpfn")
+
+[node name="GardeMarineFemme2" parent="." node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2131, 0, -21.0067)
+position_initiale = Vector3(-28.2131, 0, -21.0067)
+zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme2")
+
+[node name="ZoneCirculationGardeMarineFemme2" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.3169, 0.5, -20.947)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ZoneCirculationGardeMarineFemme2"]
+shape = SubResource("CylinderShape3D_svpfn")
+
+[node name="GardeMarineFemme3" parent="." node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2131, 0, 5.76563)
+position_initiale = Vector3(-28.2131, 0, 5.76563)
+zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme3")
+
+[node name="ZoneCirculationGardeMarineFemme3" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.3169, 0.5, 5.08603)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ZoneCirculationGardeMarineFemme3"]
 shape = SubResource("CylinderShape3D_svpfn")
