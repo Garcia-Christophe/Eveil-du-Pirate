@@ -3,6 +3,7 @@ extends CharacterBody3D
 @onready var camera_pivot = $CameraWrapper
 @onready var visuel = $Visuel
 @onready var animations = $Visuel/bot_homme/AnimationPlayer
+@onready var timer_pouvoir = $TimerPouvoir
 
 # Constantes
 const VITESSE_MARCHE = 2.0
@@ -12,6 +13,10 @@ var VITESSE = VITESSE_MARCHE
 const VELOCITE_SAUT = 4.5
 const SENSIBILITE_SOURIS = 0.005
 var GRAVITE = ProjectSettings.get_setting("physics/3d/default_gravity")
+
+# Variables
+var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.DOUBLE_SAUT
+var pouvoir_disponible = true
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -67,6 +72,22 @@ func _physics_process(delta):
 		# Déplacement du perso
 		velocity.x = move_toward(velocity.x, 0, VITESSE)
 		velocity.z = move_toward(velocity.z, 0, VITESSE)
+	
+	# Gestion du pouvoir
+	if Input.is_action_just_pressed("activer_pouvoir") && pouvoir_disponible:
+		Pouvoirs.activer_pouvoir(self)
 
 	# Application des changements (vélocités, rotations...)
 	move_and_slide()
+
+# Retourne le pouvoir du joueur
+func get_pouvoir():
+	return pouvoir
+
+# Définit le pouvoir du joueur
+func set_pouvoir(nouveau_pouvoir: Pouvoirs.Noms):
+	pouvoir = nouveau_pouvoir
+
+# Lorsque le joueur peut récupérer son pouvoir (décompte)
+func _on_timer_pouvoir_timeout():
+	pouvoir_disponible = true
