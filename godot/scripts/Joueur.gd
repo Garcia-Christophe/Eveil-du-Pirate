@@ -14,9 +14,8 @@ const SENSIBILITE_SOURIS = 0.005
 var GRAVITE = 9.81
 
 # Variables
-var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.DOUBLE_SAUT
+var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.INVISIBLE
 var pouvoir_disponible = true
-var pouvoir_active = false
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -33,9 +32,6 @@ func _physics_process(delta):
 	pouvoir_disponible = Pouvoirs.mise_a_jour_disponibilite_pouvoir(self)
 	
 	if not is_on_floor():
-#		if !pouvoir_disponible && pouvoir == Pouvoirs.Noms.DOUBLE_SAUT:
-#			velocity.y -= GRAVITE / 2 * delta
-#		else:
 		velocity.y -= GRAVITE * delta
 	
 	# Définition de la vitesse du perso
