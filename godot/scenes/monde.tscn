@@ -99,6 +99,7 @@ material_override = SubResource("StandardMaterial3D_l57an")
 mesh = SubResource("BoxMesh_pqcoy")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="NavigationRegion3D/Map/MurBlanc"]
+collision_layer = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Map/MurBlanc/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_thok2")
