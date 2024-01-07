@@ -31,20 +31,13 @@ var apercoit = false
 var curieux = false
 var poursuite = false
 var joueur_enfui = false
-var capture = false
 
 func _ready():
 	rond_etat.texture = null
 
 # Exécuter à chaque frame
 func _process(delta):
-	if capture == true:
-		animations.play("coup_de_pied")
-		poursuite = false
-		curieux = false
-		apercoit = false
-		joueur_enfui = false
-	elif poursuite == true:
+	if poursuite == true:
 		if joueur != null:
 			# Poursuit le joueur
 			se_diriger_vers(joueur.global_transform.origin, true, delta)
@@ -76,7 +69,7 @@ func _process(delta):
 			rond_etat.texture = null
 			if !est_dans_zone_de_circulation(position):
 				retour_position_initiale = true
-	elif retour_position_initiale == true:
+	elif retour_position_initiale == true && animations.current_animation != "coup_de_pied":
 		# Se dirige vers sa position initiale
 		deplacement = false
 		se_diriger_vers(position_initiale, false, delta)
@@ -84,7 +77,7 @@ func _process(delta):
 		if position.distance_to(position_initiale) < 1:
 			# Le garde a retrouvé sa position initiale, il peut retrouver son comportement normal
 			retour_position_initiale = false
-	elif deplacement == true:
+	elif deplacement == true && animations.current_animation != "coup_de_pied":
 		# Se déplace tranquillement dans sa zone de déplacement
 		var velocite = global_transform.basis.z.normalized() * VITESSE_MARCHE * delta
 		var position_suivante = position - velocite
@@ -95,7 +88,7 @@ func _process(delta):
 			move_and_collide(-velocite)
 		else:
 			deplacement = false
-	else:
+	elif animations.current_animation != "coup_de_pied":
 		# Regarde dans une autre direction
 		animations.play("attendre")
 		var position_garde = self.global_transform.origin
@@ -127,7 +120,13 @@ func se_diriger_vers(position_cible, courir, delta):
 	var velocite = (position_suivante - transform.origin).normalized() * vitesse  * delta
 	if distance <= 1.5:
 		# Le garde a capturé le joueur
-		capture = true
+		poursuite = false
+		curieux = false
+		apercoit = false
+		joueur_enfui = false
+		animations.play("coup_de_pied")
+		if !est_dans_zone_de_circulation(position):
+			retour_position_initiale = true
 	else:
 		animations.play("courir" if courir else "marcher")
 		move_and_collide(velocite)
@@ -211,7 +210,5 @@ func _on_area_danger_body_entered(body):
 
 func _on_animation_player_animation_finished(anim_name):
 	if anim_name == "coup_de_pied":
-		capture = false;
 		rond_etat.texture = null
-		# temporaire : il faudra envoyer un signal au joueur pour dire qu'il est capturé
-		joueur.set_collision_layer_value(1, false)
+		# TODO: il faudra envoyer un signal au joueur pour dire qu'il est capturé
