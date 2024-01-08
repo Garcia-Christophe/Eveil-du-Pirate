@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 Pouvoirs="*res://scripts/Pouvoirs.gd"
 
+[display]
+
+window/size/mode=4
+
 [input]
 
 avancer={

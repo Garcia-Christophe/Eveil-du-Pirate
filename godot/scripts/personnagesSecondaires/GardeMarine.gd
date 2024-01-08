@@ -2,8 +2,6 @@ extends CharacterBody3D
 
 @export var position_initiale : Vector3
 @export var zone_de_circulation : Area3D
-
-@onready var joueur = get_parent().get_node("Joueur")
 @onready var navigation : NavigationAgent3D = $NavigationAgent3D
 @onready var animations = $Visuel/bot_femme/AnimationPlayer
 @onready var raycast_position = $RayCast3D_Position
@@ -18,6 +16,7 @@ extends CharacterBody3D
 const VITESSE_MARCHE = 2.0
 const VITESSE_COURSE = 4.5
 var GRAVITE = ProjectSettings.get_setting("physics/3d/default_gravity")
+var joueur
 
 # Direction d'observation définies au hasard
 var x_position = randf_range(-360,360)
@@ -32,25 +31,31 @@ var curieux = false
 var poursuite = false
 var joueur_enfui = false
 
+# Lorsque le noeud du garde a chargé
 func _ready():
 	rond_etat.texture = null
 
 # Exécuter à chaque frame
 func _process(delta):
+	# Récupère la référence du joueur dès qu'il entre dans la partie
+	if joueur == null:
+		joueur = get_tree().get_root().get_node_or_null("Monde/IlePrincipale/Joueur")
+		if joueur == null:
+			joueur = get_tree().get_root().get_node_or_null("Monde/IleSecondaire/Joueur")
+		return;
+	
 	if poursuite == true:
-		if joueur != null:
-			# Poursuit le joueur
-			se_diriger_vers(joueur.global_transform.origin, true, delta)
+		# Poursuit le joueur
+		se_diriger_vers(joueur.global_transform.origin, true, delta)
 	elif curieux == true:
-		if joueur != null:
-			if peut_voir_le_joueur():
-				se_diriger_vers(joueur.global_transform.origin, false, delta)
-			else:
-				curieux = false
-				apercoit = false
-				rond_etat.texture = null
-				if !est_dans_zone_de_circulation(position):
-					retour_position_initiale = true
+		if peut_voir_le_joueur():
+			se_diriger_vers(joueur.global_transform.origin, false, delta)
+		else:
+			curieux = false
+			apercoit = false
+			rond_etat.texture = null
+			if !est_dans_zone_de_circulation(position):
+				retour_position_initiale = true
 	elif joueur_enfui == true || (apercoit == true && !deplacement):
 		if peut_voir_le_joueur():
 			# Fixe le joueur lorsqu'il est sorti de sa zone
