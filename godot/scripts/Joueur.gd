@@ -64,7 +64,6 @@ func _physics_process(delta):
 		velocity.y = VELOCITE_SAUT
 		animations.stop()
 		animations.play("sauter")
-		print("layer_principal_camera : ", alpha_joints.get_layer_mask_value(12))
 
 	# Définition de la direction du joueur (perso + caméra)
 	var direction_input = Input.get_vector("gauche", "droite", "avancer", "reculer")

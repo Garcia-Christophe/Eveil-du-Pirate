@@ -37,15 +37,15 @@ func _on_heberger_btn_pressed():
 	enet_peer.create_server(PORT, MAX_CLIENTS)
 	multiplayer.multiplayer_peer = enet_peer
 	multiplayer.peer_connected.connect(ajouter_joueur)
-#    multiplayer.peer_disconnected.connect(supprimer_joueur)
+	multiplayer.peer_disconnected.connect(supprimer_joueur)
 	
 	# Setup du multijoueurs
-#	adresses_ip = ""
-#	if !upnp_setup():
-#		adresses_ip = "Multijoueurs KO :(\n" + adresses_ip + "\n"
-#	else:
-#		adresses_ip = "Multijoueurs OK :)\n" + adresses_ip + "\n"
-#	print(adresses_ip)
+	adresses_ip = ""
+	if !upnp_setup():
+		adresses_ip = "Multijoueurs KO :(\n" + adresses_ip + "\n"
+	else:
+		adresses_ip = "Multijoueurs OK :)\n" + adresses_ip + "\n"
+	print(adresses_ip)
 	
 	# Ajoute le 1er joueur (car le serveur est créé par le pc d'un joueur)
 	ajouter_joueur(multiplayer.get_unique_id())
