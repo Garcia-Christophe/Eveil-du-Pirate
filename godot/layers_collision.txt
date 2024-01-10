@@ -2,3 +2,12 @@ Collisions :
 
 - Personnages principaux : 1
 - Environnement : 1, 2
+
+
+Camera : 
+
+- Personnages :
+	- Perso 1 : 11
+	- Perso 2 : 12
+	- ...
+	- Perso 10 : 20

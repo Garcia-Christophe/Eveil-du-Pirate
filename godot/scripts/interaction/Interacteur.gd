@@ -2,8 +2,6 @@ extends Area3D
 
 class_name Interacteur
 
-var controleur: Node3D
-
 func interagir(interactif: Interactif) -> void:
 	interactif.en_interaction.emit(self)
 

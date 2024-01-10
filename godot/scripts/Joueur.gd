@@ -1,8 +1,12 @@
 extends CharacterBody3D
 
 @onready var camera_pivot = $CameraWrapper
+@onready var camera = $CameraWrapper/SpringArm3D/Camera3D
 @onready var visuel = $Visuel
 @onready var animations = $Visuel/bot_homme/AnimationPlayer
+@onready var joueurInteracteur = $JoueurInteracteur
+@onready var alpha_joints = $Visuel/bot_homme/Armature/GeneralSkeleton/Alpha_Joints
+@onready var alpha_surface = $Visuel/bot_homme/Armature/GeneralSkeleton/Alpha_Surface
 
 # Constantes
 const VITESSE_MARCHE = 2.0
@@ -16,11 +20,24 @@ var GRAVITE = 9.81
 # Variables
 var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.INVISIBLE
 var pouvoir_disponible = true
+var layer_principal_camera
+
+# Chaque joueur a une autorité différente, permettant d'avoir un contrôle séparé des personnages
+func _enter_tree():
+	set_multiplayer_authority(str(name).to_int())
+	layer_principal_camera = 10 + get_tree().get_nodes_in_group("Joueur").size()
 
 func _ready():
+	if not is_multiplayer_authority(): return
+	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	camera.current = true
+	joueurInteracteur.joueur = self
+	camera.set_cull_mask_value(layer_principal_camera, true)
 
 func _input(event):
+	if not is_multiplayer_authority(): return
+	
 	# Gestion de la rotation de la vue via la souris
 	if event is InputEventMouseMotion:
 		rotate_y(-event.relative.x * SENSIBILITE_SOURIS)
@@ -28,6 +45,8 @@ func _input(event):
 		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -PI/3, PI/3)
 
 func _physics_process(delta):
+	if not is_multiplayer_authority(): return
+	
 	# Mise à jour de la disponibilité du pouvoir du joueur
 	pouvoir_disponible = Pouvoirs.mise_a_jour_disponibilite_pouvoir(self)
 	
@@ -45,6 +64,7 @@ func _physics_process(delta):
 		velocity.y = VELOCITE_SAUT
 		animations.stop()
 		animations.play("sauter")
+		print("layer_principal_camera : ", alpha_joints.get_layer_mask_value(12))
 
 	# Définition de la direction du joueur (perso + caméra)
 	var direction_input = Input.get_vector("gauche", "droite", "avancer", "reculer")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/interaction/Interactif.gd" id="1_ymp5y"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_61xmy"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_r7qpw"]
 
 [node name="Interactif" type="Area3D"]
 collision_layer = 4
@@ -10,4 +10,4 @@ collision_mask = 0
 script = ExtResource("1_ymp5y")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("BoxShape3D_61xmy")
+shape = SubResource("BoxShape3D_r7qpw")

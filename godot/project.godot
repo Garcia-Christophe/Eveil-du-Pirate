@@ -19,10 +19,6 @@ config/icon="res://icon.svg"
 
 Pouvoirs="*res://scripts/Pouvoirs.gd"
 
-[display]
-
-window/size/mode=4
-
 [input]
 
 avancer={
@@ -68,6 +64,17 @@ activer_pouvoir={
 
 [layer_names]
 
+3d_render/layer_11="Cam Perso 1"
+3d_render/layer_12="Cam Perso 2"
+3d_render/layer_13="Cam Perso 3"
+3d_render/layer_14="Cam Perso 4"
+3d_render/layer_15="Cam Perso 5"
+3d_render/layer_16="Cam Perso 6"
+3d_render/layer_17="Cam Perso 7"
+3d_render/layer_18="Cam Perso 8"
+3d_render/layer_19="Cam Perso 9"
+3d_render/layer_20="Cam Perso 10"
+3d_physics/layer_2="camera_perso"
 3d_physics/layer_3="interactif"
 
 [rendering]

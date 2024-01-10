@@ -1,9 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://cgtk1hksohosm"]
+[gd_scene load_steps=4 format=3 uid="uid://cgtk1hksohosm"]
 
 [ext_resource type="PackedScene" uid="uid://cw2huwvul2h0b" path="res://scenes/interaction/Interacteur.tscn" id="1_7u5k0"]
 [ext_resource type="Script" path="res://scripts/interaction/JoueurInteracteur.gd" id="2_vy6yi"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_q1obu"]
+
 [node name="JoueurInteracteur" instance=ExtResource("1_7u5k0")]
 script = ExtResource("2_vy6yi")
+
+[node name="CollisionShape3D" parent="." index="0"]
+shape = SubResource("BoxShape3D_q1obu")
 
 [connection signal="area_exited" from="." to="." method="_on_area_exited"]

@@ -38,10 +38,11 @@ func _ready():
 # Exécuter à chaque frame
 func _process(delta):
 	# Récupère la référence du joueur dès qu'il entre dans la partie
+	# Le nom du joueur en campagne est "1", pour permettre le nom du joueur en multi
 	if joueur == null:
-		joueur = get_tree().get_root().get_node_or_null("Monde/IlePrincipale/Joueur")
+		joueur = get_tree().get_root().get_node_or_null("Monde/IlePrincipale/1")
 		if joueur == null:
-			joueur = get_tree().get_root().get_node_or_null("Monde/IleSecondaire/Joueur")
+			joueur = get_tree().get_root().get_node_or_null("Monde/IleSecondaire/1")
 		return;
 	
 	if poursuite == true:
@@ -178,14 +179,14 @@ func _on_navigation_agent_3d_velocity_computed(safe_velocity):
 
 # Le joueur entre dans la zone de précaution du garde
 func _on_area_precaution_body_entered(body):
-	if body.name == ("Joueur"):
+	if body.name == ("1"):
 		apercoit = true
 		rond_etat.texture = rond_points_suspension
 		retour_position_initiale = false
 
 # Le joueur sort de la zone de précaution du garde
 func _on_area_precaution_body_exited(body):
-	if body.name == ("Joueur") && !retour_position_initiale:
+	if body.name == ("1") && !retour_position_initiale:
 		apercoit = false
 		poursuite = false
 		joueur_enfui = true
@@ -194,21 +195,21 @@ func _on_area_precaution_body_exited(body):
 
 # Le joueur entre dans la zone de curiosité du garde
 func _on_area_avertissement_body_entered(body):
-	if body.name == ("Joueur") && !poursuite:
+	if body.name == ("1") && !poursuite:
 		curieux = true
 		rond_etat.texture = rond_interrogation
 		retour_position_initiale = false
 
 # Le joueur sort de la zone de curiosité du garde
 func _on_area_avertissement_body_exited(body):
-	if body.name == ("Joueur") && !retour_position_initiale:
+	if body.name == ("1") && !retour_position_initiale:
 		curieux = false
 		if !poursuite && apercoit:
 			rond_etat.texture = rond_points_suspension
 
 # Le joueur entre dans la zone de détection (danger) du garde
 func _on_area_danger_body_entered(body):
-	if body.name == ("Joueur"):
+	if body.name == ("1"):
 		poursuite = true
 		rond_etat.texture = rond_exclamation
 		retour_position_initiale = false

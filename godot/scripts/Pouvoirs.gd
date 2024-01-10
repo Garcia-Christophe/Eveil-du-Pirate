@@ -49,6 +49,12 @@ func invisible(joueur):
 	if timer_invisible == null || timer_invisible.time_left == 0:
 		# Pouvoir
 		joueur.set_collision_layer_value(1, false)
+		for layer in range(11, 21): # De 11 à 20
+			joueur.alpha_joints.set_layer_mask_value(layer, false)
+			joueur.alpha_surface.set_layer_mask_value(layer, false)
+		joueur.alpha_joints.set_layer_mask_value(joueur.layer_principal_camera, true)
+		joueur.alpha_surface.set_layer_mask_value(joueur.layer_principal_camera, true)
+		
 		# Mise à jour de l'état du pouvoir
 		joueur.pouvoir_disponible = false
 		timer_invisible = Timer.new()
@@ -61,4 +67,7 @@ func invisible(joueur):
 
 func fin_invisibilite(joueur):
 	joueur.set_collision_layer_value(1, true)
+	for layer in range(11, 21): # De 11 à 20
+		joueur.alpha_joints.set_layer_mask_value(layer, true)
+		joueur.alpha_surface.set_layer_mask_value(layer, true)
 	timer_invisible.queue_free()

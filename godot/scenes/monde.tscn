@@ -119,34 +119,34 @@ transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697
 [node name="Tresor4" parent="IlePrincipale/NavigationRegion3D/Map" instance=ExtResource("2_43sdr")]
 transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697, -1.52569, 0, -21.2174)
 
-[node name="GardeMarineFemme1" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+[node name="GardeMarineFemme1" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") groups=["GardeMarineAndCo"] instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21.0067)
 position_initiale = Vector3(0, 0, -21.0067)
 zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme1")
 
-[node name="ZoneCirculationGardeMarineFemme1" type="Area3D" parent="IlePrincipale"]
+[node name="ZoneCirculationGardeMarineFemme1" type="Area3D" parent="IlePrincipale" groups=["GardeMarineAndCo"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -20.947)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="IlePrincipale/ZoneCirculationGardeMarineFemme1"]
 shape = SubResource("CylinderShape3D_svpfn")
 
-[node name="GardeMarineFemme2" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+[node name="GardeMarineFemme2" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") groups=["GardeMarineAndCo"] instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2131, 0, -21.0067)
 position_initiale = Vector3(-28.2131, 0, -21.0067)
 zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme2")
 
-[node name="ZoneCirculationGardeMarineFemme2" type="Area3D" parent="IlePrincipale"]
+[node name="ZoneCirculationGardeMarineFemme2" type="Area3D" parent="IlePrincipale" groups=["GardeMarineAndCo"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.3169, 0.5, -20.947)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="IlePrincipale/ZoneCirculationGardeMarineFemme2"]
 shape = SubResource("CylinderShape3D_svpfn")
 
-[node name="GardeMarineFemme3" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+[node name="GardeMarineFemme3" parent="IlePrincipale" node_paths=PackedStringArray("zone_de_circulation") groups=["GardeMarineAndCo"] instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2131, 0, 5.76563)
 position_initiale = Vector3(-28.2131, 0, 5.76563)
 zone_de_circulation = NodePath("../ZoneCirculationGardeMarineFemme3")
 
-[node name="ZoneCirculationGardeMarineFemme3" type="Area3D" parent="IlePrincipale"]
+[node name="ZoneCirculationGardeMarineFemme3" type="Area3D" parent="IlePrincipale" groups=["GardeMarineAndCo"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.3169, 0.5, 5.08603)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="IlePrincipale/ZoneCirculationGardeMarineFemme3"]
@@ -192,16 +192,20 @@ shape = SubResource("ConcavePolygonShape3D_thok2")
 [node name="Tresor" parent="IleSecondaire/NavigationRegion3D/Map" instance=ExtResource("2_43sdr")]
 transform = Transform3D(-0.935697, 0, 0.352805, 0, 1, 0, -0.352805, 0, -0.935697, -1.52569, 0, -21.2174)
 
-[node name="GardeMarineFemme1" parent="IleSecondaire" node_paths=PackedStringArray("zone_de_circulation") instance=ExtResource("3_rg8bl")]
+[node name="GardeMarineFemme1" parent="IleSecondaire" node_paths=PackedStringArray("zone_de_circulation") groups=["GardeMarineAndCo"] instance=ExtResource("3_rg8bl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21.0067)
 position_initiale = Vector3(0, 0, -21.0067)
 zone_de_circulation = NodePath("../../IlePrincipale/ZoneCirculationGardeMarineFemme1")
 
-[node name="ZoneCirculationGardeMarineFemme1" type="Area3D" parent="IleSecondaire"]
+[node name="ZoneCirculationGardeMarineFemme1" type="Area3D" parent="IleSecondaire" groups=["GardeMarineAndCo"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -20.947)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="IleSecondaire/ZoneCirculationGardeMarineFemme1"]
 shape = SubResource("CylinderShape3D_svpfn")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="IleSecondaire"]
+_spawnable_scenes = PackedStringArray("res://scenes/Joueur.tscn")
+spawn_path = NodePath("..")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -270,3 +274,4 @@ text = "Rejoindre une partie"
 
 [connection signal="pressed" from="CanvasLayer/MenuPrincipal/MarginContainer/VBoxContainer/VBoxCampagne/JouerBtn" to="." method="_on_jouer_btn_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuPrincipal/MarginContainer/VBoxContainer/VBoxMultijoueur/HebergerBtn" to="." method="_on_heberger_btn_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuPrincipal/MarginContainer/VBoxContainer/VBoxMultijoueur/VBoxRejoindre/RejoindreBtn" to="." method="_on_rejoindre_btn_pressed"]
