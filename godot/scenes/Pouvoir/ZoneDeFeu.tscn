@@ -1,0 +1,71 @@
+[gd_scene load_steps=10 format=3 uid="uid://bu8f64rqcduau"]
+
+[ext_resource type="Script" path="res://scripts/pouvoir/ZoneDeFeu.gd" id="1_5el2x"]
+
+[sub_resource type="Gradient" id="Gradient_mj61f"]
+offsets = PackedFloat32Array(0.283525, 0.827586)
+colors = PackedColorArray(0, 0, 0, 1, 0.494118, 0.164706, 0.0588235, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_vr8lc"]
+gradient = SubResource("Gradient_mj61f")
+
+[sub_resource type="Curve" id="Curve_1dawf"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.363014, 1), 0.0, 0.0, 0, 0, Vector2(0.982877, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_ih88i"]
+curve = SubResource("Curve_1dawf")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_imx1p"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.0
+emission_ring_radius = 3.0
+emission_ring_inner_radius = 0.0
+direction = Vector3(0, 1, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_max = 1.0
+angular_velocity_max = 40.0
+linear_accel_min = 1.0
+linear_accel_max = 5.0
+angle_max = 360.0
+scale_min = 0.01
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_ih88i")
+color_initial_ramp = SubResource("GradientTexture1D_vr8lc")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5pwus"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.34902, 0.117647, 0.054902, 1)
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_aktko"]
+lightmap_size_hint = Vector2i(7, 7)
+material = SubResource("StandardMaterial3D_5pwus")
+size = Vector2(0.5, 0.5)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_bqfrf"]
+height = 0.786068
+radius = 3.0705
+
+[node name="ZoneDeFeu" type="Area3D"]
+script = ExtResource("1_5el2x")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 500000
+lifetime = 0.5
+randomness = 1.0
+visibility_aabb = AABB(-3.11972, -0.0520341, -3.10742, 6.23944, 1.10114, 6.21483)
+local_coords = true
+draw_order = 3
+process_material = SubResource("ParticleProcessMaterial_imx1p")
+draw_pass_1 = SubResource("QuadMesh_aktko")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.316182, 0)
+shape = SubResource("CylinderShape3D_bqfrf")

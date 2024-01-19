@@ -2,6 +2,8 @@ Collisions :
 
 - Personnages principaux : 1
 - Environnement : 1, 2
+- Camera personnage : 2
+- Zones interactives : 3
 
 
 Camera : 

@@ -3,10 +3,10 @@ extends CharacterBody3D
 @onready var camera_pivot = $CameraWrapper
 @onready var camera = $CameraWrapper/SpringArm3D/Camera3D
 @onready var visuel = $Visuel
-@onready var animations = $Visuel/bot_homme/AnimationPlayer
+@onready var animations = $Visuel/Personnage/AnimationPlayer
 @onready var joueurInteracteur = $JoueurInteracteur
-@onready var alpha_joints = $Visuel/bot_homme/Armature/GeneralSkeleton/Alpha_Joints
-@onready var alpha_surface = $Visuel/bot_homme/Armature/GeneralSkeleton/Alpha_Surface
+@onready var alpha_joints = $Visuel/Personnage/Armature/GeneralSkeleton/Alpha_Joints
+@onready var alpha_surface = $Visuel/Personnage/Armature/GeneralSkeleton/Alpha_Surface
 
 # Constantes
 const VITESSE_MARCHE = 2.0
@@ -18,9 +18,10 @@ const SENSIBILITE_SOURIS = 0.005
 var GRAVITE = 9.81
 
 # Variables
-var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.INVISIBLE
+var pouvoir: Pouvoirs.Noms = Pouvoirs.Noms.BOULE_DE_FEU
 var pouvoir_disponible = true
 var layer_principal_camera
+var arme_actuelle
 
 # Chaque joueur a une autorité différente, permettant d'avoir un contrôle séparé des personnages
 func _enter_tree():
@@ -97,6 +98,10 @@ func _physics_process(delta):
 	# Gestion du pouvoir
 	if Input.is_action_just_pressed("activer_pouvoir") && pouvoir_disponible:
 		Pouvoirs.activer_pouvoir(self)
+	
+	# Utilisation de l'arme principale
+	if Input.is_action_just_pressed("tirer") && arme_actuelle:
+		arme_actuelle.tirer(self)
 
 	# Application des changements (vélocités, rotations...)
 	move_and_slide()
@@ -108,3 +113,7 @@ func get_pouvoir():
 # Définit le pouvoir du joueur
 func set_pouvoir(nouveau_pouvoir: Pouvoirs.Noms):
 	pouvoir = nouveau_pouvoir
+
+# Changement d'arme en main du joueur
+func changer_arme(nouvelle_arme):
+	arme_actuelle = nouvelle_arme
